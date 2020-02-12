@@ -1,0 +1,1 @@
+-agentlib:jdwp=transport=dt_socket,address=3050,server=y,suspend=n
