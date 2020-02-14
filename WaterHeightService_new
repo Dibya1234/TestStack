@@ -1,0 +1,64 @@
+package com.aem.poc.core.service;
+
+import com.adobe.cq.sightly.WCMUsePojo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import java.text.SimpleDateFormat;
+import java.util.*;
+//import com.aem.poc.core.service.WeatherServiceConfig;
+
+public class WaterHeightService extends WCMUsePojo {
+
+    Logger log = LoggerFactory.getLogger(WaterHeightService.class);
+    Map<SimpleDateFormat,Integer> heightMap = new HashMap<>();
+    List<Map> heightList = new ArrayList<>();
+
+
+    @Override
+    public void activate() throws Exception {
+
+        Node currentNode = getResource().adaptTo(Node.class);
+        if (currentNode.hasProperty("jcr:primaryType")) {
+            log.debug("node path is" + currentNode.getPath().toString());
+            NodeIterator childNode = currentNode.getNodes();
+            while(childNode.hasNext()){
+                log.debug("child node exists");
+                Node child = childNode.nextNode();
+                log.debug("child node path is" + child.getPath().toString());
+                // go one level down
+                // iterate over all nodes
+                // store om some cllection and return
+                    NodeIterator childNodes = child.getNodes();
+                    while(childNodes.hasNext()){
+                        log.debug("grand child node exists");
+                        Node items = childNodes.nextNode();
+                        //for loop n populate list of items
+                        List <Node> nodeList = new ArrayList<>();
+                        nodeList.add(items);
+                        for(Node i: nodeList){
+                            log.debug("items list path is: " + i);
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                            dateFormat.format(i.getProperty("datevalue").getValue().getDate().getTime());
+
+//                            String dateProp = (String) i.getProperty("datevalue");
+                                    //properties.get("datevalue", Date.class);
+                            log.debug("number value is"+i.getProperty("height").getValue().toString());
+                            Integer heightProp =  Integer.parseInt(i.getProperty("height").getValue().toString());
+                            log.debug("height prop is"+heightProp.toString());
+                            heightMap.put(dateFormat,heightProp);
+                        heightList.add(heightMap);
+                            log.debug("height list populated"+heightList.size());
+                            heightMap.remove(dateFormat);
+                        }
+                    }
+
+            }
+        }
+    }
+    public List<Map> getHeightList (){
+        return this.heightList;
+    }
+}

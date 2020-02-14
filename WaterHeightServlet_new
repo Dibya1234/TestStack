@@ -1,0 +1,73 @@
+package com.aem.poc.core.servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.GenericServlet;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.adobe.cq.social.journal.client.api.JournalEntryComment;
+import com.aem.poc.core.service.WaterHeightService;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Component(service={Servlet.class},
+        property={
+                "sling.servlet.methods=GET",
+                "sling.servlet.paths=/system/mypath1",
+                "sling.servlet.paths=/system/mypath2",
+        })
+
+public class WaterHeightServlet extends SlingSafeMethodsServlet {
+    private WaterHeightService whs;
+    List<Map> waterHeightList = new ArrayList<>();
+
+    @Override
+protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    try
+    {
+        String requiredHeight = request.getParameter("id");
+        waterHeightList.addAll(whs.getHeightList());
+        Logger log = LoggerFactory.getLogger(WaterHeightServlet.class);
+        //log.debug("passed param value is"+requiredHeight);
+        for (Map item: waterHeightList) {
+            log.debug("map item is"+item.get("datevalue"));
+            Integer keyItems = Integer.parseInt(item.get(item.keySet().iterator().next()).toString());
+            if(keyItems>1){
+                
+            }
+            /*Iterator<Map.Entry<SimpleDateFormat,Integer>> mapItems =  item.entrySet().iterator();
+            while(mapItems.hasNext())
+            {
+                Map.Entry<String, String> entry = mapItems.next();
+                System.out.println("Key = " + entry.getKey() +
+                        ", Value = " + entry.getValue());
+            }*/
+        }
+
+        //response . write() trturn the data
+    }
+    catch(Exception e)
+    {
+        e.printStackTrace();
+    }
+
+    }
+}
+
